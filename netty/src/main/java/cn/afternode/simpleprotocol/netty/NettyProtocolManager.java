@@ -5,15 +5,14 @@ import cn.afternode.simpleprotocol.core.IRequestPacket;
 import cn.afternode.simpleprotocol.core.IResponsePacket;
 import io.netty.buffer.Unpooled;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class NettyProtocolManager implements IProtocolManager<Short, NettyPacketBuffer, INettyPacket, AbstractNettyClientPacket, AbstractNettyServerPacket> {
-    private final Map<Short, Supplier<AbstractNettyClientPacket>> client = new LinkedHashMap<>();
-    private final Map<Short, Supplier<AbstractNettyServerPacket>> server = new LinkedHashMap<>();
+    private boolean registryClosed = false;
+
+    private Map<Short, Supplier<AbstractNettyClientPacket>> client = new LinkedHashMap<>();
+    private Map<Short, Supplier<AbstractNettyServerPacket>> server = new LinkedHashMap<>();
     private final Map<UUID, IRequestPacket> requests = new LinkedHashMap<>();
 
     @Override
@@ -87,5 +86,17 @@ public class NettyProtocolManager implements IProtocolManager<Short, NettyPacket
     @Override
     public void handleResponse(IResponsePacket packet) {
         Objects.requireNonNull(requests.get(packet.requestId()), () -> "Cannot find request packet with id %s".formatted(packet.requestId().toString())).onResponse(packet);
+    }
+
+    @Override
+    public void closeRegistry() {
+        this.registryClosed = true;
+        client = Collections.unmodifiableMap(client);
+        server = Collections.unmodifiableMap(server);
+    }
+
+    @Override
+    public boolean canRegister() {
+        return this.registryClosed;
     }
 }

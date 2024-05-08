@@ -23,4 +23,11 @@ public interface IProtocolManager<ID, BUF,
     IRequestPacket getRequest(UUID id);
     void removeRequest(UUID id);
     void handleResponse(IResponsePacket packet);
+
+    default void closeRegistry() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+    default boolean canRegister() {
+        return true;
+    }
 }
