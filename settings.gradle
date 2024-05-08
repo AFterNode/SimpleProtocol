@@ -1,0 +1,4 @@
+rootProject.name = 'SimpleProtocol'
+include 'core'
+include 'simple'
+
