@@ -38,17 +38,12 @@ public record NettyPacketBuffer(ByteBuf src) implements IPacketBuffer<ByteBuf> {
 
     @Override
     public void writeString(String val) {
-        src.writeBytes(val.getBytes(StandardCharsets.UTF_8));
-        src.writeByte(0x00);
+        this.writeBlock(val.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public String readString() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte read;
-        while ((read = src.readByte()) != 0x00)
-            out.write(read);
-        return out.toString(StandardCharsets.UTF_8);
+        return new String(this.readBlock(), StandardCharsets.UTF_8);
     }
 
     @Override

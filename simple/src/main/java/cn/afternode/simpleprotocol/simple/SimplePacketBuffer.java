@@ -63,18 +63,12 @@ public class SimplePacketBuffer implements IPacketBuffer<ByteBuffer> {
 
     @Override
     public void writeString(String val) {
-        buf.put(val.getBytes(StandardCharsets.UTF_8));
-        buf.put((byte) 0x00);
+        this.writeBlock(val.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public String readString() {
-        ByteArrayOutputStream s = new ByteArrayOutputStream();
-        byte b;
-        while ((b = buf.get()) != 0x00) {
-            s.write(b);
-        }
-        return s.toString(StandardCharsets.UTF_8);
+        return new String(readBlock(), StandardCharsets.UTF_8);
     }
 
     @Override
