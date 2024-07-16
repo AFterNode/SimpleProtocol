@@ -4,6 +4,9 @@ public interface IPacketBuffer<T> {
     void writeBlock(byte[] block);
     byte[] readBlock();
 
+    void writeBlockL(byte[] block);
+    byte[] readBlockL();
+
     void writeString(String val);
     String readString();
 

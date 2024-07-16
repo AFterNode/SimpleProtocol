@@ -10,12 +10,27 @@ import java.nio.charset.StandardCharsets;
 public record NettyPacketBuffer(ByteBuf src) implements IPacketBuffer<ByteBuf> {
     @Override
     public void writeBlock(byte[] block) {
-        src.writeIntLE(block.length);
+        if (block.length > Short.MAX_VALUE)
+            throw new OutOfMemoryError("Block too large");
+        src.writeShortLE(block.length);
         src.writeBytes(block);
     }
 
     @Override
     public byte[] readBlock() {
+        byte[] block = new byte[src.readShortLE()];
+        src.readBytes(block);
+        return block;
+    }
+
+    @Override
+    public void writeBlockL(byte[] block) {
+        src.writeIntLE(block.length);
+        src.writeBytes(block);
+    }
+
+    @Override
+    public byte[] readBlockL() {
         byte[] block = new byte[src.readIntLE()];
         src.readBytes(block);
         return block;

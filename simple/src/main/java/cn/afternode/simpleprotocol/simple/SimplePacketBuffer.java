@@ -35,12 +35,27 @@ public class SimplePacketBuffer implements IPacketBuffer<ByteBuffer> {
 
     @Override
     public void writeBlock(byte[] block) {
-        this.buf.putInt(block.length);
+        if (block.length > Short.MAX_VALUE)
+            throw new OutOfMemoryError("Block too large");
+        this.buf.putShort((short) block.length);
         this.buf.put(block);
     }
 
     @Override
     public byte[] readBlock() {
+        byte[] block = new byte[this.buf.getShort()];
+        this.buf.get(block);
+        return block;
+    }
+
+    @Override
+    public void writeBlockL(byte[] block) {
+        this.buf.putInt(block.length);
+        this.buf.put(block);
+    }
+
+    @Override
+    public byte[] readBlockL() {
         byte[] block = new byte[this.buf.getInt()];
         this.buf.get(block);
         return block;
