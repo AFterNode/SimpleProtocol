@@ -69,7 +69,7 @@ public class SimpleProtocolManager implements IProtocolManager<String, SimplePac
         SimplePacketBuffer buf = new SimplePacketBuffer(byteBufferSize, byteOrder);
         buf.writeString(packet.id());
         packet.write(buf);
-        return null;
+        return buf;
     }
 
     @Override
